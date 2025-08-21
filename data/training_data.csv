@@ -1,0 +1,42 @@
+Date,Amount,Vendor,Description,Category
+2023-01-15,120.0,Toronto Hydro,Monthly electricity bill,Utilities
+2023-01-31,4600.0,Paychex,Employee salaries,Payroll
+2023-02-10,250.0,Google Ads,Ad spend for campaign,Marketing
+2023-02-18,90.0,Adobe,Creative Cloud subscription,Software
+2023-03-01,2000.0,Smart Office,Rent for downtown office,Rent
+2023-03-12,135.0,Enbridge,Gas bill for heating,Utilities
+2023-04-05,500.0,QuickBooks,Accounting software,Software
+2023-04-28,4700.0,Paychex,Payroll for April,Payroll
+2023-05-14,300.0,Meta,Social media advertising,Marketing
+2023-06-01,2050.0,Smart Office,Office rent,Rent
+2023-06-10,145.0,Bell,Internet and phone bill,Utilities
+2023-06-15,130.0,Dropbox,Cloud storage service,Software
+2023-07-05,4950.0,Paychex,Monthly payroll,Payroll
+2023-07-20,180.0,Enbridge,Gas heating,Utilities
+2023-08-09,275.0,Google Ads,PPC campaign,Marketing
+2023-08-25,5200.0,Paychex,Staff salaries,Payroll
+2023-09-01,2000.0,Smart Office,Office lease,Rent
+2023-09-11,90.0,Toronto Hydro,Electricity charges,Utilities
+2023-09-20,60.0,Spotify,Office music subscription,Software
+2023-10-02,100.0,Adobe,Design software,Software
+2023-10-15,4800.0,Paychex,Team payroll,Payroll
+2023-11-05,350.0,LinkedIn,Recruiting campaign,Marketing
+2023-12-01,2050.0,Smart Office,Monthly rent,Rent
+2023-12-12,125.0,Bell,Phone and internet,Utilities
+2024-01-10,90.0,Zoom,Pro subscription,Software
+2024-01-31,5000.0,Paychex,January payroll,Payroll
+2024-02-14,275.0,Meta,Social ad budget,Marketing
+2024-02-28,2050.0,Smart Office,Office rent,Rent
+2024-03-09,110.0,Toronto Hydro,Electricity,Utilities
+2024-03-30,140.0,Dropbox,Team plan,Software
+2024-04-05,5100.0,Paychex,April salaries,Payroll
+2024-05-01,2200.0,Smart Office,Rent payment,Rent
+2024-06-03,160.0,Enbridge,Gas bill,Utilities
+2024-06-20,250.0,Google Ads,Advertising budget,Marketing
+2024-07-01,90.0,Canva,Design tools,Software
+2024-07-25,5050.0,Paychex,Team wages,Payroll
+2024-08-10,330.0,LinkedIn,Lead gen ads,Marketing
+2024-09-01,2000.0,Smart Office,Office lease,Rent
+2024-10-10,105.0,Bell,Monthly bill,Utilities
+2024-11-05,100.0,Adobe,Monthly license,Software
+2024-12-20,4800.0,Paychex,End of year payroll,Payroll
