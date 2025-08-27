@@ -1,4 +1,4 @@
-Date,Amount,Vendor,Description,Category
+date,amount,vendor,description,category
 2023-01-15,120.0,Toronto Hydro,Monthly electricity bill,Utilities
 2023-01-31,4600.0,Paychex,Employee salaries,Payroll
 2023-02-10,250.0,Google Ads,Ad spend for campaign,Marketing
@@ -40,3 +40,5 @@ Date,Amount,Vendor,Description,Category
 2024-10-10,105.0,Bell,Monthly bill,Utilities
 2024-11-05,100.0,Adobe,Monthly license,Software
 2024-12-20,4800.0,Paychex,End of year payroll,Payroll
+2025-08-10,50.0,Starbucks,coffee,food
+2025-08-12,100.0,Costco,grocery,groceries

@@ -2,7 +2,7 @@
 from pathlib import Path
 import pandas as pd
 
-ROOT = Path(__file__).resolve().parents[2] # Go up two levels to get to Backend/
+ROOT = Path(__file__).resolve().parents[2] # Go up two levels to get to PAI/
 train_csv = ROOT / "data" / "training_data.csv" # Path to the main training data CSV file
 feedback_csv = ROOT / "data" / "feedback.csv"  # Path to the feedback CSV file
 
