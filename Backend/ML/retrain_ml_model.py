@@ -10,13 +10,18 @@ from sklearn.feature_extraction.text import HashingVectorizer
 from sklearn.linear_model import SGDClassifier  
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, classification_report
+from pathlib import Path
+
+
+ROOT = Path(__file__).resolve().parent.parent   # Backend/
+DEFAULT_OUTDIR = ROOT / "ML" / "saved_models" 
 
 def get_args():
     """Parse command line arguments."""
     p = argparse.ArgumentParser(description="Incremtal bill category model retraining")
     p.add_argument("--csv", default= r"C:\Users\saifb\Downloads\PAI\data\training_data.csv", 
                    help= "Path to the training data CSV file")
-    p.add_argument("--outdir", default= "ML/saved_models",
+    p.add_argument("--outdir", default= str(DEFAULT_OUTDIR),
                    help= "Path to the output directory for saving the model")
     p.add_argument("--model_name", default= "bill_category_model.joblib",
                    help= "Name of the model to be saved")
