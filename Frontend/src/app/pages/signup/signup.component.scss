@@ -1,0 +1,26 @@
+.main-container {
+    display: flex; /* Enables Flexbox layout */
+    justify-content: center; /* Centers horizontally */
+    align-items: center; /* Centers vertically */
+    img {
+        width: 300px;
+        float: left;
+    }
+
+    .mail-form {
+        float: right;
+        min-width: 150px;
+        max-width: 500px;
+        width: 100%;
+
+        button {
+            display: flex; /* Enables Flexbox layout */
+            justify-content: center; /* Centers horizontally */
+        }
+    }
+
+    .mail-full-width {
+        width: 100%;
+    }
+}
+

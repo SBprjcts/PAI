@@ -1,0 +1,34 @@
+<p>signup works!</p>
+<div class="main-container">
+    <form class="signup-form" action="">
+        <mat-form-field class="sign-up-field">
+            <mat-label>Company</mat-label>
+            <input type="name" matInput [formControl]="companyFormControl" [errorStateMatcher]="matcher" placeholder="Ex. Walmart">
+            @if (companyFormControl.hasError('email') && !companyFormControl.hasError('required')) {
+            <mat-error>Please enter a valid company name</mat-error>
+            }
+            @if (companyFormControl.hasError('required')) {
+            <mat-error>Company name is <strong>required</strong></mat-error>
+            }
+        </mat-form-field>
+
+        <mat-form-field class="sign-up-field">
+            <mat-label>Email</mat-label>
+            <input type="email" matInput [formControl]="emailFormControl" [errorStateMatcher]="matcher" placeholder="Ex. josh@example.com">
+            @if (emailFormControl.hasError('email') && !emailFormControl.hasError('required')) {
+            <mat-error>Please enter a valid email address</mat-error>
+            }
+            @if (emailFormControl.hasError('required')) {
+            <mat-error>Email is <strong>required</strong></mat-error>
+            }
+        </mat-form-field>
+
+        <mat-form-field class="sign-up-field">
+            <mat-label>Message</mat-label>
+            <textarea matInput placeholder="Ex. It makes me feel..."></textarea>
+        </mat-form-field>
+
+        <button mat-button routerLink="/">Send</button>
+        <button mat-button filled action="sendEmail()">Basic</button>
+    </form>
+</div>
