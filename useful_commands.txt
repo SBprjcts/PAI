@@ -1,0 +1,46 @@
+----------------------------------------------------------------------
+
+GIT useful commands:
+    
+    * Pushing new code:
+        git add --all
+        git commit -m "<useful comment>"
+        git push
+
+    * Check current branch:
+        git branch
+
+    * Switch to new branch:
+        git checkout -b <branch name>
+
+    * Pushing new branch for the first time:
+        git push --set-upstream origin <branch name>
+
+----------------------------------------------------------------------
+
+Frontend useful commands:
+
+    * Run dev mode:
+        ng serve
+
+    * Create new page:
+        ng g c pages pages/<page name>
+
+----------------------------------------------------------------------
+
+Backend useful commands:
+
+    * Run flask backend app:
+        Make sure virtual environment is activated
+        python app.py
+
+    * Create virtual environment:
+        python -m venv venv
+
+    * Activate virtual environment:
+        source venv/Scripts/activate
+
+    * Deactivate virtual environment:
+        deactivate
+
+
