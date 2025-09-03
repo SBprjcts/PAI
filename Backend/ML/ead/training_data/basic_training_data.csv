@@ -1,0 +1,80 @@
+date,amount,vendor,description,category
+2023-01-15,120.00,Toronto Hydro,Monthly electricity bill,Utilities
+2023-01-31,4600.00,Paychex,Employee salaries,Payroll
+2023-02-10,250.00,Google Ads,Ad spend for campaign,Marketing
+2023-02-18,90.00,Adobe,Creative Cloud subscription,Software
+2023-03-01,2000.00,Smart Office,Rent for downtown office,Rent
+2023-03-12,135.00,Enbridge,Gas bill for heating,Utilities
+2023-04-05,500.00,QuickBooks,Accounting software,Software
+2023-04-28,4700.00,Paychex,Payroll for April,Payroll
+2023-05-14,300.00,Meta,Social media advertising,Marketing
+2023-06-01,2050.00,Smart Office,Office rent,Rent
+2023-06-10,145.00,Bell,Internet and phone bill,Utilities
+2023-06-15,130.00,Dropbox,Cloud storage service,Software
+2023-07-05,4950.00,Paychex,Monthly payroll,Payroll
+2023-07-20,180.00,Enbridge,Gas heating,Utilities
+2023-08-09,275.00,Google Ads,PPC campaign,Marketing
+2023-08-25,5200.00,Paychex,Staff salaries,Payroll
+2023-09-01,2000.00,Smart Office,Office lease,Rent
+2023-09-11,90.00,Toronto Hydro,Electricity charges,Utilities
+2023-09-20,60.00,Spotify,Office music subscription,Software
+2023-10-02,100.00,Adobe,Design software,Software
+2023-10-15,4800.00,Paychex,Team payroll,Payroll
+2023-11-05,350.00,LinkedIn,Recruiting campaign,Marketing
+2023-12-01,2050.00,Smart Office,Monthly rent,Rent
+2023-12-12,125.00,Bell,Phone and internet,Utilities
+2024-01-10,90.00,Zoom,Pro subscription,Software
+2024-01-31,5000.00,Paychex,January payroll,Payroll
+2024-02-14,275.00,Meta,Social ad budget,Marketing
+2024-02-28,2050.00,Smart Office,Office rent,Rent
+2024-03-09,110.00,Toronto Hydro,Electricity,Utilities
+2024-03-30,140.00,Dropbox,Team plan,Software
+2024-04-05,5100.00,Paychex,April salaries,Payroll
+2024-05-01,2200.00,Smart Office,Rent payment,Rent
+2024-06-03,160.00,Enbridge,Gas bill,Utilities
+2024-06-20,250.00,Google Ads,Advertising budget,Marketing
+2024-07-01,90.00,Canva,Design tools,Software
+2024-07-25,5050.00,Paychex,Team wages,Payroll
+2024-08-10,330.00,LinkedIn,Lead gen ads,Marketing
+2024-09-01,2000.00,Smart Office,Office lease,Rent
+2024-10-10,105.00,Bell,Monthly bill,Utilities
+2024-11-05,100.00,Adobe,Monthly license,Software
+2024-12-20,4800.00,Paychex,End of year payroll,Payroll
+2025-01-08,82.50,Staples,Office supplies,Office Supplies
+2025-01-20,45.00,Uber,Client visit transport,Travel
+2025-02-03,210.00,AWS,EC2 & S3 usage,Cloud
+2025-02-09,58.75,Starbucks,Team coffee meeting,Food
+2025-02-14,97.20,Costco,Kitchen snacks & water,Groceries
+2025-02-28,2050.00,Smart Office,Monthly office rent,Rent
+2025-03-05,310.00,Google Ads,Search ads,Marketing
+2025-03-18,76.40,DoorDash,Team lunch,Food
+2025-03-29,118.00,Microsoft,365 Business Standard,Software
+2025-04-02,86.00,Toronto Hydro,Electricity bill,Utilities
+2025-04-15,4920.00,Paychex,Payroll mid-month,Payroll
+2025-04-22,130.00,Enbridge,Gas heating,Utilities
+2025-05-07,245.00,LinkedIn,Job ads,Marketing
+2025-05-11,66.30,Tim Hortons,Breakfast catering,Food
+2025-05-25,199.00,GitHub,Enterprise plan,Software
+2025-06-01,2000.00,Smart Office,Office lease,Rent
+2025-06-09,152.00,Bell,Internet & phone,Utilities
+2025-06-21,390.00,Google Ads,Display ads,Marketing
+2025-07-03,95.00,Zoom,Annual add-on,Software
+2025-07-13,72.90,Uber Eats,Working lunch,Food
+2025-07-24,5200.00,Paychex,Monthly payroll,Payroll
+2025-08-10,50.00,Starbucks,coffee,Food
+2025-08-12,100.00,Costco,grocery,Groceries
+2025-08-19,84.20,Shell,Fuel for company car,Travel
+2025-08-28,310.00,Meta,Social ads,Marketing
+2025-09-05,210.00,AWS,Compute & storage,Cloud
+2025-09-11,2050.00,Smart Office,Office rent,Rent
+2025-09-18,124.50,Dropbox,Business Advanced,Software
+2025-09-27,141.75,Toronto Hydro,Electric power,Utilities
+2025-10-04,57.60,Pizza Pizza,Team pizza Friday,Food
+2025-10-16,4600.00,Paychex,Payroll,Payroll
+2025-10-23,289.00,Canva,Teams subscription,Software
+2025-11-03,96.30,Uber,Airport ride to client,Travel
+2025-11-18,415.00,Google Ads,Holiday campaign,Marketing
+2025-11-29,2050.00,Smart Office,Office rent,Rent
+2025-12-06,132.00,Bell,Internet & phone,Utilities
+2025-12-12,189.00,Adobe,All Apps plan,Software
+2025-12-20,5050.00,Paychex,Year-end payroll,Payroll
