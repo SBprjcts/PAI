@@ -21,7 +21,7 @@ from flask import Flask, request, jsonify
 API_DIR = Path(__file__).resolve().parent                 # Backend/api
 ROOT    = API_DIR.parent                                  # Backend/
 MODELS_DIR = ROOT / "ead" /"saved_models"                 # model artifacts
-FEEDBACK_CSV = ROOT / "ead" / "Training_Data" / "anomaly_feedback.csv"     # where we store human labels
+FEEDBACK_CSV = ROOT / "ead" / "training_data" / "anomaly_feedback.csv"     # where we store human labels
 
 app = Flask(__name__)
 
@@ -107,6 +107,7 @@ class AnomalyModelStore:
             raise FileNotFoundError(f"No model found in {self.models_dir}")
         mtime = p.stat().st_mtime
         if self._model_path != p or self._mtime != mtime:
+            print(">>> Loading model from:", p, "size(bytes)=", p.stat().st_size)
             self._model = joblib.load(p)
             self._model_path = p
             self._mtime = mtime

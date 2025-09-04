@@ -81,7 +81,8 @@ def main():
     # Train IsolationForest (decision_function > 0 => normal; < 0 => anomaly)
     model = IsolationForest(
         n_estimators=200,
-        contamination="auto",
+        contamination=0.15,
+        # contamination="auto",
         random_state=42,
         n_jobs=-1,
     ).fit(X)
