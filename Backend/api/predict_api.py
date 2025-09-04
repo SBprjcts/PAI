@@ -6,6 +6,8 @@ from typing import Optional, List, Tuple
 import csv
 from datetime import datetime, timezone 
 import os
+from fastapi.middleware.cors import CORSMiddleware # Makes the API accessible from a frontend running on a different origin
+
 
 API_DIR = Path(__file__).resolve().parent # Directory of the current file
 ROOT = API_DIR.parent # Go up level to get the root directory
@@ -15,6 +17,14 @@ FEEDBACK_CSV = ROOT / "data" / "feedback.csv" # Path to the feedback CSV file
 from app.interface import ModelStore # Import the ModelStore class from the inference module
 app = FastAPI(title="Bill Categorization API", version="0.1.0") # Initialize FastAPI app
 store = ModelStore(MODELS_DIR) # Initialize the model store with the models directory
+
+app.add_middleware( # Add CORS middleware to allow requests from the frontend
+    CORSMiddleware,
+    allow_origins=["http://localhost:4200"], # Angular dev server origin so frontend can access the API
+    allow_credentials=True, # Allow cookies and authentication headers
+    allow_methods=["GET", "POST"], # Allow GET, POST methods only
+    allow_headers=["Authorization", "Content-Type", "Accept"] # Allow specific headers
+)
 
 class PredictIn(BaseModel): # Validates input data for prediction
     vendor: str = Field(..., min_length=1) # Vendor name must be at least 1 character
