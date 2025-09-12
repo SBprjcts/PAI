@@ -1,0 +1,66 @@
+<div class="card">
+    <h2 class="title">Add Expenses</h2>
+
+    <form [formGroup]="form" (ngSubmit)="submitPredict()">
+        <div class="form-row">
+            <div class="date-field">
+                <label>Date</label>
+                <input type="date" formControlName="date" id="date" required [class.has-value]="form.get('date')?.value"/>
+            </div>
+
+            <div class="amount-field">
+                <label>Amount</label>
+                <input type="number" formControlName="amount" placeholder="e.g., 123.45" 
+                step="0.01" min="0.01" (input)="enforceTwoDecimals($event)" (input)="enforceCharLimit($event, 12)"/>
+            </div>
+
+            <div class="vendor-field">
+                <label>Vendor</label>
+                <input type="text" formControlName="vendor" placeholder="e.g., Amazon" 
+                (input)="enforceCharLimit($event, 30)" />
+            </div>
+        </div>
+        
+        <div class="field">
+            <label>Description</label>
+            <textarea formControlName="description" rows="3" placeholder="e.g., Purchase of office supplies"
+            (input)="enforceCharLimit($event, 255)"></textarea>
+        </div>
+         
+        <div class="char-counter">
+            {{ form.get('description')?.value?.length || 0 }}/255
+        </div>
+        
+        <div class="submit-container"> 
+            <button type="submit" [disabled]="loading || !form.valid">Submit</button>
+        </div>
+        
+        
+  </form>
+
+  <div *ngIf="loading" class="muted">Predicting...</div>
+    <div *ngIf="error" class="error">{{ error }}</div>
+
+    <div *ngIf="result" class="result"> 
+        <h3>
+        Predicted Category: <span class="pill">{{ result?.category }} </span>
+        </h3>
+
+        <div *ngIf="result.top?.length">
+            <h4>Top matches</h4>
+            <ul>
+                <li *ngFor="let pair of result.top">
+                    {{ pair[0] }} - {{ (pair[1] * 100) | number:'1.0-2' }}%
+                </li>
+            </ul>
+        </div>
+        
+        <div class="feedback">
+            <h4> Was this wrong? Enter the correct category:</h4>
+            <form [formGroup]="correctionForm" (ngSubmit)="submitFeedback()">
+                <input type="text" formControlName="category" placeholder="Correct category (e.g., Office Supplies)" />
+                <button type="submit" [disabled]="!correctionForm.valid">Submit correction</button>
+            </form>
+        </div>
+    </div>
+</div>
