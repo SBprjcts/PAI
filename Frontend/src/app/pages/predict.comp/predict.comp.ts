@@ -13,6 +13,8 @@ import { CommonModule } from '@angular/common';
 export class PredictComp { 
 
   loading = false; // Property/attribute that Indicates if a prediction request to backend is in progress
+  showManual = false // Property/attribute that indicates if manual correction form is displayed to user
+  allCategories: string[] = []
   error: string | null = null; // Stores error messages, can be string or null
   result: PredictResponse | null = null; // Stores the prediction result
   form: FormGroup; // Form group for vendor and description inputs
@@ -30,6 +32,13 @@ export class PredictComp {
     this.correctionForm = this.fb.group({
       category: [''] // Initializes correction form with a single category field and no validators (means its optional)
     });
+    }
+    
+    ngOnInit(): void {
+      this.api.getCategories().subscribe({
+        next: (r) => this.allCategories = [...new Set(r.categories)].sort((a,b) => a.localeCompare(b)), // Cleaned (no dupes), sorted array of cats
+        error: () => this.allCategories = this.allCategories ?? []  // If the request fails, keep existing categories or default to empty
+      });
     }
 
     enforceTwoDecimals(event: any) {
@@ -58,9 +67,6 @@ export class PredictComp {
       }
     }
 
-    
-      
-
     submitPredict() {
       this.error = null; // Resets error message before predicting
       this.result = null; // Resets previous prediction result
@@ -76,12 +82,33 @@ export class PredictComp {
       });
     }
 
+    normalizeCategory(e: Event) {
+      const el = e.target as HTMLInputElement; // Grabs DOM element from category box, tells typescript its <input> element
+      el.value = el.value.replace(/\s+/g, ' ').trimStart(); // Replaces mutliple spaces with a single space and removes space at start of text
+       this.correctionForm.get('category')?.setValue(el.value, { emitEvent: false }); // Updates form control for category with the cleaned value
+    }
+
+    get canSubmitCorrection(): boolean {
+      const v = (this.correctionForm.get('category')?.value || '').trim(); // Gets the current category typed or '' for none
+      const predicted = (this.result?.category || '').trim(); // removes leading and trailing spaces
+      return v.length > 0 && v.length <= 30 && v.toLowerCase() !== predicted.toLowerCase(); // Button olnly enabled when all conditions met
+    }
+
+    acceptPrediction() {
+      this.quickCorrect(this.result?.category);
+    }
+
+    quickCorrect(cat?: string) {
+      this.correctionForm.setValue({ category: cat});
+      this.submitFeedback();
+    }
+
     submitFeedback() {
       if (!this.result) return; // If there's no prediction result, exits the function
       const category = (this.correctionForm.value.category || '').toString().trim(); // Extracts and trims the category from the correction form
-      const { vendor, description } = this.form.value as { vendor: string; description: string }; // Extracts vendor and description from the main form
+      const { vendor, description, date, amount} = this.form.value as { vendor: string; description: string; date: string; amount: number }; // Extracts vendor and description from the main form
       if (!category) { this.error = 'Enter a corrected category.'; return; } // If category is empty, sets an error message and exits the function
-      this.api.feedback({ vendor, description, category }).subscribe({
+      this.api.feedback({ vendor, description, date, amount, category }).subscribe({
         next: () => {
           this.correctionForm.reset(); // Resets the correction form on successful feedback submission
           alert('Thanks — your correction was recorded.')

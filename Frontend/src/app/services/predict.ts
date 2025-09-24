@@ -33,6 +33,11 @@ export class Predict {
   feedback(body: FeedbackRequest): Observable<{ status: string; message: string; }> {
     return this.http.post<{ status: string; message: string; }>('${this.base}/feedback', body); // Sends a POST request to the /feedback endpoint
   }
+
+  getCategories(): Observable<{ categories: string[] }> {
+    return this.http.get<{ categories: string[] }>('${this.base}/categories'); // Sends a Get request to /categories expects list of strings
+  }
+
 }
 
 

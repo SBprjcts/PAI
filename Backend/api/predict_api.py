@@ -2,9 +2,9 @@
 from pathlib import Path
 from fastapi import FastAPI, BackgroundTasks, HTTPException
 from pydantic import BaseModel, Field
-from typing import Optional, List, Tuple
+from typing import Optional, List, Tuple, Set
 import csv
-from datetime import datetime, timezone 
+from datetime import datetime, timezone
 import os
 from fastapi.middleware.cors import CORSMiddleware # Makes the API accessible from a frontend running on a different origin
 
@@ -56,6 +56,32 @@ def append_feedback(row: FeedbackIn):
             "feedback_api",
             datetime.now(timezone.utc).isoformat()
         ])
+      
+def get_categories_from_model() -> Set[str]:
+    cats: Set[str] = set()
+    if hasattr(store, "labels"):
+        cats.update([str(x) for x in store.labels])
+    return cats
+
+def get_categories_from_feedback() -> Set[str]:
+    cats: Set[str] = set()
+    if FEEDBACK_CSV.exists():
+        with FEEDBACK_CSV.open("r", newline="", encoding="utf-8") as f:
+            r = csv.DictReader(f)
+            for row in r:
+                cat = (row.get("category") or "").strip()
+                if cat:
+                    cats.add(cat)
+    return cats
+
+@app.get("/categories") #Get endpoint for category submitted with the expense
+def categories(): #What does this do breakdown****** (copy 2and give mergez_feedback, copy 3 and give coponent file)
+    """ Return all known categories (model + feedback), unique and sorted."""
+    cats = set()
+    cats |= get_categories_from_model() # Adds all categories from model to cats (union)
+    cats |= get_categories_from_feedback 
+    return {"categories": sorted(cats, key=lambda s: s.lower())} #JSON response with categories sorted by alphabet (case-insensitive)
+
 
 @app.post("/predict", response_model=PredictOut) # Define a POST endpoint for predictions, expects PredictIn model, returns PredictOut model
 def predict(payload: PredictIn): # Define the function FASTAPI will call when this endpoint is hit
