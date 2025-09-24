@@ -34,6 +34,14 @@ class ModelStore:
             self._model = joblib.load(p) 
             self._model_path = p
             self._mtime = mtime
+            
+        # Extract classes for later use
+        if hasattr(self._model, "classes_"):
+            self.labels = list(self._model.classes_)
+        elif isinstance(self._model, Pipeline) and hasattr(self._model, "classes_"):
+            self.labels = list(self._model.classes_)
+        else:
+            self.labels = []
 
     def _maybe_reload(self):
         """Cheap check to see each call, reload if a newer file is dropped in the folder"""
