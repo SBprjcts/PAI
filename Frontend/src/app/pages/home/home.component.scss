@@ -1,0 +1,99 @@
+:host {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(to right, #e0eafc, #cfdef3);
+  padding: 1rem;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.welcome-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.welcome-card {
+  background: white;
+  padding: 2rem 2.5rem;
+  border-radius: 10px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  max-width: 500px;
+  width: 100%;
+  text-align: center;
+}
+
+.logo {
+  max-width: 80px;
+  margin: 0 auto 1rem auto;
+}
+
+.main-title {
+  font-size: 2rem;
+  color: #222;
+  margin-bottom: 0.5rem;
+}
+
+.subtitle {
+  font-size: 1rem;
+  color: #555;
+  margin-bottom: 1.5rem;
+}
+
+.hero-image {
+  width: 100%;
+  max-height: 200px;
+  object-fit: contain;
+  margin-bottom: 1.5rem;
+}
+
+.button-group {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+
+  .btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+  }
+
+  .primary {
+    background-color: #1976d2;
+    color: white;
+
+    &:hover {
+      background-color: #125ca1;
+    }
+  }
+
+  .secondary {
+    background-color: #eee;
+    color: #222;
+
+    &:hover {
+      background-color: #ddd;
+    }
+  }
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .welcome-card {
+    padding: 1.5rem;
+  }
+
+  .main-title {
+    font-size: 1.6rem;
+  }
+
+  .btn {
+    font-size: 0.95rem;
+    padding: 0.6rem 1rem;
+  }
+}

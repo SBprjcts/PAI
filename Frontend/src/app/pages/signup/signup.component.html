@@ -1,0 +1,77 @@
+<div class="card">
+  <img src="main.png" alt="Logo" class="logo" />
+
+  <h2 class="title">Sign up</h2>
+
+  <form class="signup-form" (submit)="onSubmit($event)">
+    <div class="form-row">
+      <!-- Company Field -->
+      <div class="field">
+        <label for="company">Company</label>
+        <input
+          id="company"
+          type="text"
+          [formControl]="companyFormControl"
+          placeholder="e.g., Walmart"
+        />
+        @if (companyFormControl.invalid && companyFormControl.touched) {
+          @if (companyFormControl.hasError('required')) {
+            <div class="error">Company name is <strong>required</strong></div>
+          }
+          @if (companyFormControl.hasError('email')) {
+            <div class="error">Please enter a valid company name</div>
+          }
+        }
+      </div>
+
+      <!-- Email Field -->
+      <div class="field">
+        <label for="email">Email</label>
+        <input
+          id="email"
+          type="email"
+          [formControl]="emailFormControl"
+          placeholder="e.g., josh@example.com"
+        />
+        @if (emailFormControl.invalid && emailFormControl.touched) {
+          @if (emailFormControl.hasError('required')) {
+            <div class="error">Email is <strong>required</strong></div>
+          }
+          @if (emailFormControl.hasError('email')) {
+            <div class="error">Please enter a valid email address</div>
+          }
+        }
+      </div>
+
+      <!-- Password Field -->
+      <div class="field">
+        <label for="password">Password</label>
+        <input
+          id="password"
+          type="password"
+          [formControl]="passwordFormControl"
+          placeholder="••••••••"
+        />
+        @if (passwordFormControl.invalid && passwordFormControl.touched) {
+          @if (passwordFormControl.hasError('required')) {
+            <div class="error">Password is <strong>required</strong></div>
+          }
+        }
+      </div>
+    </div>
+
+    <div class="submit-container">
+      <button
+        type="submit"
+        [disabled]="!companyFormControl.valid || !emailFormControl.valid || !passwordFormControl.valid"
+      >
+        Sign up
+      </button>
+    </div>
+
+    <p class="login-link">
+      Already have an account?
+      <a routerLink="/login">Log in</a>
+    </p>
+  </form>
+</div>

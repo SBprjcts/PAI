@@ -1,0 +1,105 @@
+:host {
+  display: flex;
+  justify-content: center;
+  padding: 2rem 1rem;
+  background: linear-gradient(to right, #e0eafc, #cfdef3);
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.dashboard-wrapper {
+  max-width: 800px;
+  width: 100%;
+}
+
+.title {
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 2rem;
+  color: #222;
+}
+
+.expense-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  background: white;
+  border-radius: 10px;
+  padding: 1rem 1.5rem;
+  margin-bottom: 1.2rem;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
+  transition: box-shadow 0.3s;
+
+  &:hover {
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
+  }
+}
+
+.indicator {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  margin-top: 0.5rem;
+
+  &.red {
+    background-color: #e53935;
+  }
+
+  &.yellow {
+    background-color: #fbc02d;
+  }
+
+  &.green {
+    background-color: #43a047;
+  }
+}
+
+.expense-details {
+  flex: 1;
+}
+
+.top-row,
+.middle-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.95rem;
+  margin-bottom: 0.25rem;
+}
+
+.vendor {
+  font-weight: bold;
+  color: #333;
+}
+
+.amount {
+  font-weight: bold;
+  color: #1976d2;
+}
+
+.date,
+.category,
+.score {
+  color: #555;
+  font-size: 0.85rem;
+}
+
+.bottom-row .description {
+  margin-top: 0.5rem;
+  color: #444;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .top-row,
+  .middle-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.2rem;
+  }
+
+  .expense-card {
+    padding: 1rem;
+  }
+}
