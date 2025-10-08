@@ -1,0 +1,24 @@
+<div class="dashboard-wrapper">
+  <h2 class="title">Anomalous Expenses</h2>
+
+  <div class="expense-card" *ngFor="let exp of expenses">
+    <div class="indicator" [ngClass]="getSeverityColor(exp.anomalyScore)"></div>
+
+    <div class="expense-details">
+      <div class="top-row">
+        <span class="vendor">{{ exp.vendor }}</span>
+        <span class="amount">${{ exp.amount.toFixed(2) }}</span>
+      </div>
+
+      <div class="middle-row">
+        <span class="date">{{ exp.date }}</span>
+        <span class="category">{{ exp.category }}</span>
+        <span class="score">Anomaly Score: {{ exp.anomalyScore }}%</span>
+      </div>
+
+      <div class="bottom-row">
+        <p class="description">{{ exp.description }}</p>
+      </div>
+    </div>
+  </div>
+</div>
