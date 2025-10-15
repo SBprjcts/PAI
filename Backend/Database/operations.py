@@ -8,7 +8,6 @@ from Backend.Models.user import User
 import os
 from typing import Optional
 from psycopg2 import Binary
-from Backend.tools.encryption import encrypt, decrypt
 from werkzeug.security import check_password_hash
 
 

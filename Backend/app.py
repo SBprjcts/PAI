@@ -22,19 +22,32 @@ ACCESS_TTL = 900        # 15m
 REFRESH_TTL = 1209600   # 14d
 REFRESH_COOKIE = "refresh_token"
 
-def issue_access(uid: str):
-    payload = {"sub": uid, "type": "access", "iat": int(time.time()), "exp": int(time.time()) + ACCESS_TTL}
+def issue_access(uid: str | int):
+    payload = {
+        "sub": str(uid),          # 👈 cast to string
+        "type": "access",
+        "iat": int(time.time()),
+        "exp": int(time.time()) + ACCESS_TTL,
+    }
     return jwt.encode(payload, JWT_SECRET, algorithm="HS256")
 
-def issue_refresh(uid: str):
-    payload = {"sub": uid, "type": "refresh", "iat": int(time.time()),
-               "exp": int(time.time()) + REFRESH_TTL, "jti": str(uuid.uuid4())}
+def issue_refresh(uid: str | int):
+    payload = {
+        "sub": str(uid),          # 👈 cast to string
+        "type": "refresh",
+        "iat": int(time.time()),
+        "exp": int(time.time()) + REFRESH_TTL,
+        "jti": str(uuid.uuid4()),
+    }
     return jwt.encode(payload, JWT_SECRET, algorithm="HS256")
+
 
 def verify_access(token: str):
     p = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
-    if p.get("type") != "access": raise jwt.InvalidTokenError("wrong type")
+    if p.get("type") != "access":
+        raise jwt.InvalidTokenError("wrong type")
     return p
+
 
 @app.post("/api/login")
 def login():
@@ -52,27 +65,51 @@ def login():
         "access_token": access,
         "user": {"id": user.id, "company": user.company, "email": user.email}
     }))
+    # in BOTH /api/login and /api/refresh responses
     resp.set_cookie(
-        REFRESH_COOKIE, refresh,
-        httponly=True, secure=not app.debug, samesite="Lax", max_age=REFRESH_TTL, path="/"
+        "refresh_token", refresh,
+        httponly=True,
+        secure=False,      # dev over HTTP; set True only when using HTTPS
+        samesite="Lax",    # ok for same-origin via proxy
+        max_age=REFRESH_TTL,
+        path="/"           # NOT "/api"
+        # DO NOT set 'domain'  (host-only cookie)
     )
     return resp
 
 
 @app.post("/api/refresh")
 def refresh():
-    token = request.cookies.get(REFRESH_COOKIE)
-    if not token:
+    tok = request.cookies.get(REFRESH_COOKIE)
+    if not tok:
         return jsonify({"error": "No refresh"}), 401
+
     try:
-        payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
+        payload = jwt.decode(tok, JWT_SECRET, algorithms=["HS256"])
         if payload.get("type") != "refresh":
-            raise jwt.InvalidTokenError()
-    except Exception:
+            raise jwt.InvalidTokenError("wrong type")
+        uid = payload["sub"]              # this is a string now
+    except jwt.ExpiredSignatureError:
+        return jsonify({"error": "Expired refresh"}), 401
+    except Exception as e:
+        print("refresh(): decode error ->", repr(e))
         return jsonify({"error": "Invalid refresh"}), 401
 
-    new_access = issue_access(payload["sub"])
-    return jsonify({"access_token": new_access})
+    new_access  = issue_access(uid)       # safe; issue_access str-casts anyway
+    new_refresh = issue_refresh(uid)
+
+    resp = make_response(jsonify({"access_token": new_access}))
+    resp.set_cookie(
+        REFRESH_COOKIE, new_refresh,
+        httponly=True,
+        secure=False,          # dev over HTTP; set True with HTTPS in prod
+        samesite="Lax",
+        max_age=REFRESH_TTL,
+        path="/"
+    )
+    return resp, 200
+
+
 
 @app.get("/api/me")
 def me():
@@ -111,4 +148,4 @@ def signup():
     return jsonify({"status": "success"})
 
 if __name__ == "__main__":
-    app.run(port=5000, debug=True)
+    app.run(host="localhost", port=5000, debug=True)

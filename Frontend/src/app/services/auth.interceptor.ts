@@ -1,44 +1,62 @@
-// src/app/services/auth.interceptor.ts
-import { HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
+import {
+  HttpInterceptorFn, HttpRequest, HttpHandlerFn, HttpEvent, HttpErrorResponse
+} from '@angular/common/http';
 import { AuthService } from './auth.service';
-import { from, switchMap, catchError, throwError } from 'rxjs';
+import { BehaviorSubject, Observable, throwError, from } from 'rxjs';
+import { catchError, filter, switchMap, take } from 'rxjs/operators';
 
-export const AuthInterceptor: HttpInterceptorFn = (req, next) => {
+let isRefreshing = false;
+const refresh$ = new BehaviorSubject<string | null>(null);
+
+const isAuthEndpoint = (url: string) =>
+  url.endsWith('/api/login') || url.endsWith('/api/refresh') || url.endsWith('/api/signup');
+
+export const authInterceptor: HttpInterceptorFn = (req: HttpRequest<any>, next: HttpHandlerFn): Observable<HttpEvent<any>> => {
   const auth = inject(AuthService);
 
   const headers: Record<string, string> = {};
-  if (auth.token) {
-    headers['Authorization'] = `Bearer ${auth.token}`;
-  }
+  const token = auth.token;
+  if (token && !isAuthEndpoint(req.url)) headers['Authorization'] = `Bearer ${token}`;
 
-  const authedReq = req.clone({
-    withCredentials: true,
-    setHeaders: headers,
-  });
+  const authed = req.clone({ withCredentials: true, setHeaders: headers });
 
-  return next(authedReq).pipe(
-    catchError((err) => {
-      if (err.status === 401) {
-        return from(auth.refresh()).pipe(
-          switchMap(() => {
-            const retryHeaders: Record<string, string> = {};
-            if (auth.token) {
-              retryHeaders['Authorization'] = `Bearer ${auth.token}`;
-            }
+  return next(authed).pipe(
+    catchError((err: any) => {
+      if (isAuthEndpoint(req.url) || !(err instanceof HttpErrorResponse) || err.status !== 401) {
+        return throwError(() => err);
+      }
 
-            const retryReq = req.clone({
-              withCredentials: true,
-              setHeaders: retryHeaders,
-            });
+      // 401 on a protected endpoint → try a single refresh
+      if (!isRefreshing) {
+        isRefreshing = true;
+        refresh$.next(null);
 
-            return next(retryReq);
+        return from(auth.refresh()).pipe(                    // auth.refresh() returns a Promise<string>
+          switchMap((newToken: string) => {
+            isRefreshing = false;
+            refresh$.next(newToken);
+
+            const retryHeaders: Record<string, string> = { Authorization: `Bearer ${newToken}` };
+            const retryReq = req.clone({ withCredentials: true, setHeaders: retryHeaders });
+            return next(retryReq);                           // retry original request with new token
           }),
-          catchError(() => throwError(() => err))
+          catchError((refreshErr) => {
+            isRefreshing = false;
+            return throwError(() => refreshErr);
+          })
         );
       }
 
-      return throwError(() => err);
+      // If a refresh is already in flight, wait for it
+      return refresh$.pipe(
+        filter((t): t is string => t !== null),
+        take(1),
+        switchMap((t) => {
+          const retryReq = req.clone({ withCredentials: true, setHeaders: { Authorization: `Bearer ${t}` } });
+          return next(retryReq);
+        })
+      );
     })
   );
 };
