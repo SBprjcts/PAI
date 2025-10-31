@@ -1,0 +1,30 @@
+-- Run this as one script (transaction) in psql/VS Code
+
+BEGIN;
+
+-- 1) Create a seed table (keep what you need)
+CREATE TABLE IF NOT EXISTS seed_expenses (
+  id           serial PRIMARY KEY,
+  vendor       varchar(255),
+  description  varchar(255),
+  category     varchar(100),
+  amount       numeric(12,2),
+  expense_date date,
+  source       text DEFAULT 'migrated_from_expenses'
+);
+
+-- 2) Copy rows from expenses -> seed_examples
+INSERT INTO seed_expenses (vendor,description,category,amount,expense_date)
+SELECT vendor, description, category, amount, expense_date
+FROM expenses
+WHERE user_id = 3;   -- ← change/remove filter as you like
+
+-- (optional sanity checks)
+-- SELECT COUNT(*) AS moved FROM seed_examples WHERE source='migrated_from_expenses';
+-- SELECT COUNT(*) AS to_delete FROM expenses WHERE user_id=3;
+
+-- 3) Delete the copied rows from expenses
+DELETE FROM expenses
+WHERE user_id = 3;   -- ← same filter as above
+
+COMMIT;
