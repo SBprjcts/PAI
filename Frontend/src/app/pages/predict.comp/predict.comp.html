@@ -1,0 +1,108 @@
+<div class="card">
+    <h2 class="title">Add Expenses</h2>
+
+    <form [formGroup]="form" (ngSubmit)="submitPredict()">
+        <div class="form-row">
+            <div class="date-field">
+                <label>Date</label>
+                <input type="date" formControlName="date" id="date" required [class.has-value]="form.get('date')?.value"/>
+            </div>
+
+            <div class="amount-field">
+                <label>Amount</label>
+                <input type="number" formControlName="amount" placeholder="e.g., 123.45" 
+                step="0.01" min="0.01" (input)="enforceTwoDecimals($event)" (input)="enforceCharLimit($event, 12)"/>
+            </div>
+
+            <div class="vendor-field">
+                <label>Vendor</label>
+                <input type="text" formControlName="vendor" placeholder="e.g., Amazon" 
+                (input)="enforceCharLimit($event, 30)" />
+            </div>
+        </div>
+        
+        <div class="field">
+            <label>Description</label>
+            <textarea formControlName="description" rows="3" placeholder="e.g., Purchase of office supplies"
+            (input)="enforceCharLimit($event, 255)"></textarea>
+        </div>
+         
+        <div class="char-counter">
+            {{ form.get('description')?.value?.length || 0 }}/255
+        </div>
+        
+        <div class="submit-container"> 
+            <button type="submit" [disabled]="loading || !form.valid">Continue</button>
+        </div>
+        
+    </form>
+
+  <div *ngIf="loading" class="muted">Predicting...</div>
+    <div *ngIf="error" class="error">{{ error }}</div>
+
+    <div *ngIf="result" class="result" aria-live="polite"> 
+        
+        <hr class="section-divider">
+        
+        <h3 class="section-title">Category </h3> 
+        
+
+        <!-- ADD: two-column wrapper: chips (left) + manual input (right) -->
+        <div class="category-chooser"><!-- ADD -->
+            <div class="left">
+        
+                <div *ngIf="result.top?.length" class="top-matches">
+                    <div class="under-predicted">
+                        <label class="label suggested-label">Suggested categories</label>
+                        <div class="chip-list" role="listbox" aria-label="Top category matches">
+                            <button type="button"
+                                class="chip"
+                                role="option"
+                                *ngFor="let name of topChips"
+                                [class.selected]="selectedCategory === name"
+                                [attr.aria-pressed]="selectedCategory === name"
+                                (click)="selectCategory(name)">
+                                {{ name }}
+                            </button>
+                        </div>
+                            <div class="inline-actions">
+                                <button type="button" class="btn text" (click)="clearManual()">Clear</button>
+                            </div>
+                    </div>
+                </div>
+
+                
+            </div>
+
+            <!--right col below-->
+            
+            <form [formGroup]="correctionForm" (ngSubmit)="submitFeedback()" 
+                class="manual-correction right" novalidate>
+                <label for="category" class="label">Add category</label>
+                
+                <div class="input-with-count">
+                    <input id="category"
+                    type="text"
+                    formControlName="category"
+                    placeholder="e.g., Office Supplies"
+                    list="categoryOptions"
+                    maxlength = "30"
+                    autocomplete="off" autocapitalize="words" spellcheck="false"
+                    aria-describedby="catHelp catCount"
+                    (input)="enforceCharLimit($event, 30); normalizeCategory($event)"  />
+                    <small id="catHelp" class="muted">Use an existing category name when possible.</small>
+                </div>
+                    
+                <datalist id="categoryOptions">
+                    <option *ngFor="let c of filteredCategories" [value]="c"></option>
+                </datalist>
+                
+                <div class="submit-container">
+                    <button type="submit" [disabled]="!canSubmitCorrection">Add Expense </button>
+                </div>
+
+
+            </form>
+        </div>
+    </div>
+</div>
