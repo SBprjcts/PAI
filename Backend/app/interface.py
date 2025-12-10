@@ -3,7 +3,7 @@ import joblib
 import time
 from typing import Dict, List, Tuple
 import numpy as np
-from ML.retrain_ml_model import build_vectorizer
+from Backend.ML.vectorizer_utils import build_vectorizer
 from sklearn.pipeline import Pipeline
 
 # This module provides an interface for laoding a reusable ML model from a directory.
@@ -33,7 +33,7 @@ class ModelStore:
         if p != self._model_path or mtime != self.mtime: # If the path or modified time has changed, reload the model
             self._model = joblib.load(p) 
             self._model_path = p
-            self._mtime = mtime
+            self.mtime = mtime
             
         # Extract classes for later use
         if hasattr(self._model, "classes_"):
@@ -125,8 +125,17 @@ class ModelStore:
         #     top = [(c, float(p)) for c, p in ranked]
             
         # return str(y_pred), top
-        
 
+class UserModelStore(ModelStore):
+        """Stores models under ML/saved_models/user_<id>/..."""
+        def __init__(self, base_dir: Path, user_id: int):
+            user_dir = Path(base_dir) / f"user_{user_id}"
+            user_dir.mkdir(parents=True, exist_ok=True)
+            super().__init__(user_dir)
+        
+        def reload(self):
+            """Force reload the latest model from disk."""
+            self._load_latest() 
 
 
 

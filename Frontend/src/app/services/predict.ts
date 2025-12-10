@@ -26,16 +26,16 @@ export class Predict {
   constructor(private http: HttpClient) {} // Constructor runs on service initialization, injecting HttpClient
 
   predict(body: PredictRequest): Observable<PredictResponse> {
-    return this.http.post<PredictResponse>(`${this.base}/predict`, body); // Sends a POST request to the /predict endpoint
+    return this.http.post<PredictResponse>(`${this.base}/predict?user_id=0`, body); // Sends a POST request to the /predict endpoint
     // body is the request payload containing vendor and description
   }
 
   feedback(body: FeedbackRequest): Observable<{ status: string; message: string; }> {
-    return this.http.post<{ status: string; message: string; }>('${this.base}/feedback', body); // Sends a POST request to the /feedback endpoint
+    return this.http.post<{ status: string; message: string; }>(`${this.base}/feedback?user_id=0`, body); // Sends a POST request to the /feedback endpoint
   }
 
   getCategories(): Observable<{ categories: string[] }> {
-    return this.http.get<{ categories: string[] }>('${this.base}/categories'); // Sends a Get request to /categories expects list of strings
+    return this.http.get<{ categories: string[] }>(`${this.base}/categories?user_id=0`); // Sends a Get request to /categories expects list of strings
   }
 
 }

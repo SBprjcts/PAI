@@ -11,10 +11,20 @@ from sklearn.linear_model import SGDClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, classification_report
 from pathlib import Path
+# Circular import removed - ModelStore and UserModelStore imports commented out
+# from Backend.app.interface import ModelStore
+# from Backend.app.interface import UserModelStore
+
+import os
+try:
+    import psycopg2  # DB driver for Postgres
+except ImportError:
+    psycopg2 = None
 
 
 ROOT = Path(__file__).resolve().parent.parent   # Backend/
 DEFAULT_OUTDIR = ROOT / "ML" / "saved_models" 
+PGURL = os.getenv("PGURL") or os.getenv("DATABASE_URL")
 
 def get_args():
     """Parse command line arguments."""
@@ -36,6 +46,12 @@ def get_args():
     p.add_argument("--random_state", type=int, default=42,
         help="Random seed for reproducible splits."
     )
+    p.add_argument("--source", choices=["csv", "db"], default="csv",
+               help="Training source: csv (default) or db (Postgres training_examples view)"
+               )
+    p.add_argument("--pgurl", default=os.getenv("PGURL") or os.getenv("DATABASE_URL"),
+               help="Postgres URL; used when --source db (or set PGURL env)"
+               )
     return p.parse_args()
 
 
@@ -76,6 +92,49 @@ def load_data(csv_path: str) -> pd.DataFrame:
     # Drop empties
     df = df[(df["text"].str.len() > 0) & (df["category"].str.len() > 0)].reset_index(drop=True)
 
+    return df
+
+def load_data_from_db(pgurl: str) -> pd.DataFrame:
+    if not pgurl:
+        raise RuntimeError("PGURL not set; pass --pgurl or set env PGURL")
+    if psycopg2 is None:
+        raise RuntimeError("psycopg2 not installed in this environment")
+
+    conn = psycopg2.connect(pgurl)
+    df = pd.read_sql(
+        "SELECT vendor, description, category FROM public.training_examples;",
+        conn
+    )
+    conn.close()
+
+    # Normalize + build text, same as CSV path
+    df["vendor"] = df["vendor"].astype(str).fillna("").str.strip()
+    df["description"] = df["description"].astype(str).fillna("").str.strip()
+    df["category"] = df["category"].astype(str).fillna("").str.strip()
+    df["text"] = (df["vendor"] + " " + df["description"]).str.lower().str.strip()
+    df = df[(df["text"].str.len() > 0) & (df["category"].str.len() > 0)].reset_index(drop=True)
+    return df
+
+def load_user_training(pgurl: str, user_id: int) -> pd.DataFrame:
+    """ Load data for a specific user (seed + that user's labels) """
+    if not pgurl:
+        raise RuntimeError("PGURL not set")
+    if psycopg2 is None:
+        raise RuntimeError("psycopg2 not installed")
+    conn = psycopg2.connect(pgurl)
+    df = pd.read_sql("""
+        SELECT vendor, description, category FROM public.seed_expenses
+        UNION ALL
+        SELECT vendor, description, chosen_cat AS category
+        FROM public.user_labels
+        WHERE user_id = %s AND chosen_cat IS NOT NULL
+    """, conn, params=(user_id,))
+    conn.close()
+    df["vendor"] = df["vendor"].fillna("").astype(str).str.strip()
+    df["description"] = df["description"].fillna("").astype(str).str.strip()
+    df["category"] = df["category"].fillna("").astype(str).str.strip()
+    df["text"] = (df["vendor"] + " " + df["description"]).str.lower().str.strip()
+    df = df[(df["text"].str.len() > 0) & (df["category"].str.len() > 0)].reset_index(drop=True)
     return df
 
 def row_id(text: str, category: str) -> str:
@@ -193,6 +252,67 @@ def train_or_update_model(df: pd.DataFrame,
 
     return model, vectorizer, seen
 
+# TODO: Work in progress - these functions require implementing missing methods in ModelStore
+# (load_vectorizer, save_vectorizer, load_model, save_model)
+# Commented out to allow API to start without circular import errors
+
+# def train_global_from_seed(pgurl: str):
+#     """ train the global (seed-only) model into user_0 """
+#     if not pgurl:
+#         raise RuntimeError("PGURL not set")
+#     conn = psycopg2.connect(pgurl)
+#     df = pd.read_sql("SELECT vendor, description, category FROM public.seed_expenses;", conn)
+#     conn.close()
+#     if df.empty:
+#         print("[train] no seed data"); return
+#     X_text = (df["vendor"].fillna("") + " " + df["description"].fillna("")).values
+#     y = df["category"].astype(str).values
+
+#     store = ModelStore(DEFAULT_OUTDIR / "user_0")  # global bucket
+#     vec = getattr(store, "vectorizer", None) or store.load_vectorizer()
+#     clf = getattr(store, "model", None) or store.load_model()
+
+#     X = vec.fit_transform(X_text)
+#     clf.fit(X, y)
+#     store.save_vectorizer(vec); store.save_model(clf)
+#     print("[train] global seed model saved → user_0")
+
+# def retrain_user_specialized(user_id: int, pgurl: str):
+#     """ Specialize a user model by partial_fit on that user's labels """
+#     if not pgurl:
+#         raise RuntimeError("PGURL not set")
+#     # 1) load global seed model (user_0)
+#     gstore = ModelStore(DEFAULT_OUTDIR / "user_0")  # Note: MODELS_DIR was undefined, should be DEFAULT_OUTDIR
+#     vec = gstore.load_vectorizer()
+#     clf = gstore.load_model()  # SGDClassifier
+
+#     # 2) fetch only this user's labels
+#     conn = psycopg2.connect(pgurl)
+#     u = pd.read_sql("""
+#         SELECT vendor, description, chosen_cat AS category
+#         FROM public.user_labels
+#         WHERE user_id=%s AND chosen_cat IS NOT NULL
+#     """, conn, params=(user_id,))
+#     conn.close()
+
+#     # If no labels yet, just copy global into user folder
+#     ustore = UserModelStore(DEFAULT_OUTDIR, user_id)  # Note: MODELS_DIR was undefined, should be DEFAULT_OUTDIR
+#     if u.empty:
+#         ustore.save_vectorizer(vec); ustore.save_model(clf)
+#         print(f"[train] no user labels; copied global → user_{user_id}")
+#         return
+
+#     X_text = (u["vendor"].fillna("") + " " + u["description"].fillna("")).str.lower().values
+#     y = u["category"].astype(str).values
+#     X = vec.transform(X_text)
+
+#     classes = np.unique(y)  # stable classes for first partial_fit
+#     clf.partial_fit(X, y, classes=classes)
+
+#     ustore.save_vectorizer(vec); ustore.save_model(clf)
+#     print(f"[train] personalized model saved → user_{user_id}")
+
+
 def _bootstrap_classes(df, model, vectorizer, all_classes):
      """Ensure that the model knows the full label set before streaming updates.
      Attempt to feed at least one example per class to the model; if not possible, pass
@@ -256,8 +376,12 @@ def main():
     # Ensure output directory exists (for model + seen_ids.json).
     os.makedirs(args.outdir, exist_ok=True)
 
-    # Load the CSV every run (so we can detect newly added rows).
-    df = load_data(args.csv)
+    # # Load the CSV every run (so we can detect newly added rows).
+    # df = load_data(args.csv)
+    if args.source == "db":
+        df = load_data_from_db(args.pgurl)
+    else:
+        df = load_data(args.csv)
 
     # Load or init the seen set (to avoid double-training).
     seen = prepare_seen(args.outdir, args.seen_file)
