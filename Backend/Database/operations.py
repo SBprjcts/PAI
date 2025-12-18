@@ -3,6 +3,7 @@ import psycopg2
 import sys, pathlib
 sys.path.append(str(pathlib.Path(__file__).resolve().parents[2]))
 from Backend.Models.user import User
+from Backend.Models.expense import Expense
 # import datetime
 # from Tools.db_syntax import sqlToObject
 import os
@@ -38,7 +39,7 @@ def get_sql_file_path(filename):
     return file_path
 
 
-def add_users(user: User) -> bool:
+def add_user_db(user: User) -> bool:
     conn = getDbConnection()
     cur = conn.cursor()
     # Define the path to your SQL file
@@ -47,7 +48,7 @@ def add_users(user: User) -> bool:
     with open(sql_file_path, 'r') as file:
         insert_query = file.read()
     # Set new user id as len(users) table (number of users) + 1:
-    user.id = get_users_count() + 1
+    user.id = get_user_count_db() + 1
     # Execute the query with parameters from the `user` object
     cur.execute(insert_query, (user.id, user.company, user.email, user.password))
     conn.commit()
@@ -56,7 +57,7 @@ def add_users(user: User) -> bool:
     return True
 
 
-def get_users(email: str, password: str) -> Optional[User]:
+def get_user_db(email: str, password: str) -> Optional[User]:
     conn = getDbConnection()
     cur = conn.cursor()
     sql_file_path = get_sql_file_path('get_users.sql')
@@ -80,7 +81,7 @@ def get_users(email: str, password: str) -> Optional[User]:
     return User(row[1], row[2], stored_hash, row[0])
 
 
-def get_users_count():
+def get_user_count_db():
     conn = getDbConnection()
     cur = conn.cursor()
     sql_file_path = get_sql_file_path('get_users_count.sql')
@@ -89,3 +90,89 @@ def get_users_count():
     cur.execute(get_query)
     count = cur.fetchone()[0]
     return count
+
+
+def add_expense_db(expense: Expense) -> bool:
+    conn = getDbConnection()
+    cur = conn.cursor()
+    # Define the path to your SQL file
+    sql_file_path = get_sql_file_path('add_expense.sql')
+    # Read the SQL command from the file
+    with open(sql_file_path, 'r') as file:
+        insert_query = file.read()
+    # Set new user id as len(expense) table (number of expenses) + 1:
+    expense.id = get_expense_count_db() + 1
+    # Execute the query with parameters from the `expense` object
+    cur.execute(insert_query, (expense.id, expense.user_id, expense.expense_date, expense.amount, expense.vendor, expense.description, expense.category, expense.anomaly_score))
+    conn.commit()
+    cur.close()
+    conn.close()
+    return True
+
+
+def get_expense_count_db():
+    conn = getDbConnection()
+    cur = conn.cursor()
+    sql_file_path = get_sql_file_path('get_expense_count.sql')
+    with open(sql_file_path, 'r') as file:
+        get_query = file.read()
+    cur.execute(get_query)
+    count = cur.fetchone()[0]
+    return count
+
+
+def get_expense_db(user_id) -> Optional[User]:
+    conn = getDbConnection()
+    cur = conn.cursor()
+    sql_file_path = get_sql_file_path('get_expense.sql')
+    # Read the SQL command from the file
+    with open(sql_file_path, 'r') as file:
+        get_query = file.read()
+    # Execute the query with parameters from the `user` object
+    cur.execute(get_query, (user_id, ))
+    rows = cur.fetchall()
+    cur.close()
+    conn.close()
+
+    if not rows:
+        return []
+    print(f"row from db expense: {rows}")
+    return rows
+
+
+def update_expense_db(user_id) -> Optional[User]:
+    conn = getDbConnection()
+    cur = conn.cursor()
+    sql_file_path = get_sql_file_path('get_expense.sql')
+    # Read the SQL command from the file
+    with open(sql_file_path, 'r') as file:
+        get_query = file.read()
+    # Execute the query with parameters from the `user` object
+    cur.execute(get_query, (user_id, ))
+    rows = cur.fetchall()
+    cur.close()
+    conn.close()
+
+    if not rows:
+        return []
+    print(f"row from db expense: {rows}")
+    return rows
+
+
+def delete_expense_db(user_id) -> Optional[User]:
+    conn = getDbConnection()
+    cur = conn.cursor()
+    sql_file_path = get_sql_file_path('get_expense.sql')
+    # Read the SQL command from the file
+    with open(sql_file_path, 'r') as file:
+        get_query = file.read()
+    # Execute the query with parameters from the `user` object
+    cur.execute(get_query, (user_id, ))
+    rows = cur.fetchall()
+    cur.close()
+    conn.close()
+
+    if not rows:
+        return []
+    print(f"row from db expense: {rows}")
+    return rows

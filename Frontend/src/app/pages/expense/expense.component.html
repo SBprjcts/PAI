@@ -1,0 +1,58 @@
+<div class="dashboard-container">
+  <!-- Sidebar -->
+  <nav class="sidebar">
+    <a class="logo" routerLink="/dashboard"><img src="logo2.png" alt="Logo" class="logo" /></a>
+
+    <ul class="nav-links">
+      <li><a routerLink="/input-earnings" routerLinkActive="active">Input Earnings</a></li>
+      <li><a routerLink="/expenses" routerLinkActive="active" class="active">Expenses</a></li>
+      <li><a routerLink="/categorization" routerLinkActive="active">Automated Bill Categorization</a></li>
+      <li><a routerLink="/forecasting" routerLinkActive="active">Predictive Cash Flow Forecasting</a></li>
+      <li><a routerLink="/ead" routerLinkActive="active">Expense Anomaly Detection</a></li>
+    </ul>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <!-- ✅ Success message -->
+    <div *ngIf="successMessage" class="success-message">
+      {{ successMessage }}
+    </div>
+
+    <!-- ✅ Form only shows when successMessage is null -->
+    <div class="form-wrapper" *ngIf="!successMessage">
+      <h2 class="title">Add Expense</h2>
+
+      <form [formGroup]="expenseForm" (ngSubmit)="submitExpense()" novalidate>
+        <div class="form-group">
+          <label for="date">Date</label>
+          <input type="date" formControlName="date" id="date" />
+        </div>
+
+        <div class="form-group">
+          <label for="amount">Amount</label>
+          <input type="number" formControlName="amount" id="amount" step="0.01" placeholder="e.g. 123.45" />
+        </div>
+
+        <div class="form-group">
+          <label for="vendor">Vendor</label>
+          <input type="text" formControlName="vendor" id="vendor" placeholder="e.g. Amazon" />
+        </div>
+
+        <div class="form-group">
+          <label for="description">Description</label>
+          <textarea formControlName="description" id="description" rows="3" placeholder="Optional description"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="category">Category</label>
+          <input type="text" formControlName="category" id="category" placeholder="e.g. Software" />
+        </div>
+
+        <div class="submit-container">
+          <button type="submit" [disabled]="expenseForm.invalid">Submit Expense</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

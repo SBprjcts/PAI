@@ -1,12 +1,12 @@
 from flask import Flask, jsonify, request, make_response
 from flask_cors import CORS
 from Models.user import User
-from Database.operations import add_users, get_users
+from Database.operations import add_user_db, get_user_db, add_expense_db, get_expense_db, update_expense_db, delete_expense_db
 import os, time, uuid, jwt
 from dotenv import load_dotenv
 from datetime import datetime, timedelta
 from werkzeug.security import generate_password_hash
-
+from functools import wraps
 
 load_dotenv()
 
@@ -21,6 +21,23 @@ JWT_SECRET = os.getenv("JWT_SECRET", "change-me-long-random")
 ACCESS_TTL = 900        # 15m
 REFRESH_TTL = 1209600   # 14d
 REFRESH_COOKIE = "refresh_token"
+
+
+def require_auth(f):
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+        auth = request.headers.get("Authorization", "")
+        if not auth.startswith("Bearer "):
+            return jsonify({"error": "Unauthorized"}), 401
+        token = auth.split(" ", 1)[1]
+        try:
+            payload = verify_access(token)
+        except Exception:
+            return jsonify({"error": "Unauthorized"}), 401
+        request.user_id = payload["sub"]
+        return f(*args, **kwargs)
+    return wrapper
+
 
 def issue_access(uid: str | int):
     payload = {
@@ -54,7 +71,7 @@ def login():
     data = request.json or {}
     email = data.get("email", "")
     password = data.get("password", "")
-    user = get_users(email, password)  # TODO: switch to hashed passwords ASAP
+    user = get_user_db(email, password)
     if not user:
         return jsonify({"error": "Invalid credentials"}), 401
 
@@ -146,6 +163,55 @@ def signup():
     add_users(new_user)
 
     return jsonify({"status": "success"})
+
+
+# Add a new expense
+@app.route('/api/expense', methods=['POST'])
+@require_auth
+def add_expense():
+    user_id = request.user_id  # 👈 logged-in user ID
+    data = request.get_json()
+    date = data.get("date")
+    amount = data.get("amount")
+    vendor = data.get("vendor")
+    description = data.get("description")
+    category = data.get("category")
+
+    # TODO: Calculate anomaly score
+    anomaly_score = data.get("anomaly_score")
+
+    # Save expense linked to this user
+    add_expense_db(user_id, date, amount, vendor, description, category, anomaly_score)
+
+    return jsonify({"status": "success"}), 201
+
+
+# Get all expenses
+@app.route('/api/expense', methods=['GET'])
+@require_auth
+def get_expenses():
+    user_id = request.user_id
+    expenses = get_expense_db(user_id)  # Fetch only this user’s expenses
+    return jsonify({expenses})
+
+
+# Update an existing expense
+@app.route('/api/expense/<int:expense_id>', methods=['PUT'])
+def update_expense(expense_id):
+    data = request.get_json()
+    for exp in expenses:
+        if exp['id'] == expense_id:
+            exp.update(data)
+            return jsonify(exp)
+    return jsonify({'error': 'Expense not found'}), 404
+
+# Delete an expense
+@app.route('/api/expense/<int:expense_id>', methods=['DELETE'])
+def delete_expense(expense_id):
+    global expenses
+    expenses = [exp for exp in expenses if exp['id'] != expense_id]
+    return jsonify({'message': f'Expense {expense_id} deleted'}), 200
+
 
 if __name__ == "__main__":
     app.run(host="localhost", port=5000, debug=True)

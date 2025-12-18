@@ -1,0 +1,91 @@
+<div class="dashboard-container">
+  <!-- Sidebar -->
+  <nav class="sidebar">
+    <a class="logo" routerLink="/dashboard">
+      <img src="logo2.png" alt="Logo" class="logo" />
+    </a>
+
+    <ul class="nav-links">
+      <li><a routerLink="/input-earnings" routerLinkActive="active">Input Earnings</a></li>
+      <li><a routerLink="/expenses" routerLinkActive="active">Expenses</a></li>
+      <li><a routerLink="/categorization" routerLinkActive="active">Automated Bill Categorization</a></li>
+      <li><a routerLink="/forecasting" routerLinkActive="active">Predictive Cash Flow Forecasting</a></li>
+      <li><a routerLink="/ead" routerLinkActive="active">Expense Anomaly Detection</a></li>
+    </ul>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <div class="expenses-wrapper">
+      <!-- Header -->
+      <div class="header">
+        <h2>All Expenses</h2>
+        <div class="header-actions">
+          <button class="add-btn" routerLink="/expense">➕ Add Expense</button>
+          <button (click)="toggleSortOrder()">
+            Sort: {{ sortOrder === 'newest' ? 'Newest First' : 'Oldest First' }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Filters -->
+      <div class="filter-bar">
+        <input
+          type="text"
+          [(ngModel)]="searchTerm"
+          (input)="searchExpenses()"
+          placeholder="Search by vendor, category, or description..."
+        />
+        <select [(ngModel)]="selectedCategory" (change)="searchExpenses()">
+          <option>All</option>
+          <option *ngFor="let cat of uniqueCategories">{{ cat }}</option>
+        </select>
+      </div>
+
+      <!-- Monthly Summary -->
+      <div class="monthly-summary" *ngIf="formattedMonthlyTotals.length > 0">
+        <h3>Monthly Totals</h3>
+        <ul>
+          <li *ngFor="let item of formattedMonthlyTotals">
+            <strong>{{ item[0] }}:</strong> ${{ item[1].toFixed(2) }}
+          </li>
+        </ul>
+      </div>
+
+      <!-- Expense Cards -->
+      <div class="expense-card" *ngFor="let expense of filteredExpenses; index as i">
+        <!-- Edit Mode -->
+        <form *ngIf="editIndex === i" [formGroup]="editForm" (ngSubmit)="saveEdit(i)">
+          <div class="edit-grid">
+            <input type="date" formControlName="date" />
+            <input type="number" formControlName="amount" />
+            <input type="text" formControlName="vendor" />
+            <input type="text" formControlName="category" />
+            <textarea rows="2" formControlName="description"></textarea>
+          </div>
+
+          <div class="button-group">
+            <button type="submit">Save</button>
+            <button type="button" (click)="cancelEdit()">Cancel</button>
+          </div>
+        </form>
+
+        <!-- View Mode -->
+        <div *ngIf="editIndex !== i" class="view-mode">
+          <div class="row">
+            <strong>{{ expense.vendor }}</strong> · ${{ expense.amount.toFixed(2) }}
+          </div>
+          <div class="row small">
+            {{ expense.date }} · {{ expense.category }}
+          </div>
+          <div class="row description">{{ expense.description }}</div>
+
+          <div class="button-group">
+            <button (click)="startEdit(i)">Edit</button>
+            <button (click)="deleteExpense(expense.id)">Delete</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

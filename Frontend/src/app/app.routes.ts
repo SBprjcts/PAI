@@ -26,17 +26,31 @@ export const routes: Routes = [
   // Protected routes
   {
     path: 'dashboard',
-    canActivate: [authGuard],
+    // canActivate: [authGuard],
     loadComponent: () =>
       import('./pages/dashboard/dashboard.component').then(m => m.DashboardComponent),
     title: 'PAI | Dashboard'
   },
   {
     path: 'ead',
-    canActivate: [authGuard],
+    // canActivate: [authGuard],
     loadComponent: () =>
       import('./pages/ead/ead.component').then(m => m.EadComponent),
     title: 'PAI | Anomaly Detection'
+  },
+  {
+    path: 'expense',
+    // canActivate: [authGuard],
+    loadComponent: () =>
+      import('./pages/expense/expense.component').then(m => m.ExpenseComponent),
+    title: 'PAI | Expenses'
+  },
+  {
+    path: 'expenses',
+    // canActivate: [authGuard],
+    loadComponent: () =>
+      import('./pages/expenses/expenses.component').then(m => m.ExpensesComponent),
+    title: 'PAI | Expenses List'
   },
 
   // Wildcard route (everything else)
